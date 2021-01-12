@@ -1,19 +1,25 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-const server = express()
-const port = 9000;
+//const { Socket } = require('dgram');
+var app  = require('express')();
+var http = require('http').Server(app);
+var io =  require('socket.io')(http);
 
-server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({
-    extended: true
-}))
-
-server.get('/', (req, res) => {
-    res.send('ok')
+app.get('/',(req,res) => {
+    //res.end('test node');
+    res.sendFile(__dirname + '/index.html')
 })
 
-server.listen(port, function (err, result) {
-    console.log('running in port http://localhost:' + port)
+io.on('connection', (socket) => {
+    console.log('user connection');
+
+    socket.on('chat message',(msg) =>{
+        console.log('message : ' + msg );
+
+        //rp
+        io.emit('chat message', msg);
+    })
+
 })
 
-export default server
+http.listen(3000, function(){
+    console.log('listen on post 3000')
+})
